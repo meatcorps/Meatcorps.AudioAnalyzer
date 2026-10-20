@@ -14,7 +14,7 @@ public sealed class AudioAnalyzerOptions
     public int HopSize { get; set; } = 512;
 
     public float LowMaxHz { get; set; } = 250.0f;
-    public float MidMaxHz { get; set; } = 4_000.0f;
+    public float MidMaxHz { get; set; } = 3_000.0f;
     public float HighMaxHz { get; set; } = 16_000.0f;
 
     public float FloorDb { get; set; } = -60.0f;
@@ -22,12 +22,16 @@ public sealed class AudioAnalyzerOptions
 
     public float Attack { get; set; } = 0.65f;
     public float Release { get; set; } = 0.12f;
-
+    
     public float BeatThresholdMultiplier { get; set; } = 2.2f;
-    public float BeatMinimumLowLevel { get; set; } = 0.15f;
-    public int BeatRefractoryMs { get; set; } = 140;
+    public float BeatMinimumLowLevel { get; set; } = 0.5f;
+    public float BeatMinimumFlux { get; set; } = 0.035f;
+    public int BeatRefractoryMs { get; set; } = 160;
 
     public int BroadcastHz { get; set; } = 30;
 
     public MaDeviceType DeviceType { get; set; } = MaDeviceType.Capture;
+    public float HighMultiplier { get; set; } = 3f;
+    public float MidMultiplier { get; set; } = 2f;
+    public float LowMultiplier { get; set; } = 1f;
 }

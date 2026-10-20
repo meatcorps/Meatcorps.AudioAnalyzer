@@ -41,6 +41,7 @@ public sealed class AudioAnalysisWorker : BackgroundService
             analysesPerSecond,
             _options.BeatThresholdMultiplier,
             _options.BeatMinimumLowLevel,
+            _options.BeatMinimumFlux,
             _options.BeatRefractoryMs);
     }
 
@@ -97,9 +98,9 @@ public sealed class AudioAnalysisWorker : BackgroundService
             _beatSequence++;
 
         _state.Publish(new AudioAnalysisFrame(
-            ToByte(_low),
-            ToByte(_mid),
-            ToByte(_high),
+            ToByte(_low * _options.LowMultiplier),
+            ToByte(_mid * _options.MidMultiplier),
+            ToByte(_high * _options.HighMultiplier),
             beat,
             _beatSequence));
     }
