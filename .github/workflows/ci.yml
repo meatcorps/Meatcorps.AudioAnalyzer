@@ -1,0 +1,125 @@
+name: Build and Publish
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+env:
+  DOTNET_VERSION: 10.0.x
+  SOLUTION: Meatcorps.AudioAnalyzer.sln
+  CLIENT_PROJECT: Meatcorps.AudioAnalyzer.Client/Meatcorps.AudioAnalyzer.Client.csproj
+  SERVER_PROJECT: Meatcorps.AudioAnalyzer/Meatcorps.AudioAnalyzer.csproj
+
+jobs:
+  publish:
+    name: Build, NuGet and Release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore ${{ env.SOLUTION }}
+
+      - name: Build
+        run: dotnet build ${{ env.SOLUTION }} -c Release --no-restore
+
+      - name: Pack client
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts/nuget | Out-Null
+
+          dotnet pack $env:CLIENT_PROJECT `
+            -c Release `
+            --no-build `
+            -o artifacts/nuget
+
+      - name: Publish Windows x64 server
+        shell: pwsh
+        run: |
+          $publishDirectory = "artifacts/server/win-x64"
+
+          dotnet publish $env:SERVER_PROJECT `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -o $publishDirectory
+
+          New-Item -ItemType Directory -Force -Path artifacts/release | Out-Null
+
+          Compress-Archive `
+            -Path "$publishDirectory/*" `
+            -DestinationPath "artifacts/release/Meatcorps.AudioAnalyzer-win-x64.zip" `
+            -Force
+
+      - name: Login to NuGet
+        uses: NuGet/login@v1
+        id: nuget
+        with:
+          user: Meatcorps
+      
+      - name: Publish client to NuGet
+        shell: pwsh
+        run: |
+          $package = Get-ChildItem artifacts/nuget/*.nupkg |
+            Where-Object { $_.Name -notlike "*.symbols.nupkg" } |
+            Select-Object -First 1
+
+          if ($null -eq $package) {
+            throw "No NuGet package was generated."
+          }
+
+          Write-Host "Publishing $($package.Name)"
+
+          dotnet nuget push $package.FullName `
+            --api-key "${{ steps.nuget.outputs.NUGET_API_KEY }}" `
+            --source "https://api.nuget.org/v3/index.json" `
+            --skip-duplicate
+
+      - name: Determine package version
+        shell: pwsh
+        run: |
+          $package = Get-ChildItem artifacts/nuget/*.nupkg |
+            Where-Object { $_.Name -notlike "*.symbols.nupkg" } |
+            Select-Object -First 1
+
+          $version = $package.BaseName.Replace(
+            "Meatcorps.AudioAnalyzer.Client.",
+            ""
+          )
+
+          "RELEASE_VERSION=$version" |
+            Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+          Write-Host "Release version: $version"
+
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "v$env:RELEASE_VERSION"
+
+          $server =
+            "artifacts/release/Meatcorps.AudioAnalyzer-win-x64.zip"
+
+          $package = Get-ChildItem artifacts/nuget/*.nupkg |
+            Where-Object { $_.Name -notlike "*.symbols.nupkg" } |
+            Select-Object -First 1
+
+          gh release create $tag `
+            $server `
+            $package.FullName `
+            --target $env:GITHUB_SHA `
+            --title "Meatcorps AudioAnalyzer $env:RELEASE_VERSION" `
+            --prerelease `
+            --generate-notes
