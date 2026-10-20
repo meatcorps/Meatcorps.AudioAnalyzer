@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Meatcorps Audio Analyzer</title>
+    <style>
+        :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+        body { margin: 0; background: #111; color: #eee; }
+        main { max-width: 760px; margin: 0 auto; padding: 32px 20px; }
+        h1 { margin: 0 0 6px; font-size: 28px; }
+        .status { color: #aaa; margin-bottom: 28px; }
+        .meter { margin: 20px 0; }
+        .label { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .track { height: 36px; background: #252525; border-radius: 6px; overflow: hidden; }
+        .bar { height: 100%; width: 0%; background: #ddd; transition: width 45ms linear; }
+        #beat { margin-top: 30px; padding: 22px; text-align: center; border-radius: 8px; background: #252525; font-size: 24px; font-weight: 700; }
+        #beat.on { background: #eee; color: #111; }
+        code { color: #bbb; }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Meatcorps Audio Analyzer</h1>
+    <div class="status"><span id="connection">Connecting…</span> · <code>/audio</code></div>
+
+    <div class="meter">
+        <div class="label"><span>LOW</span><strong id="lowValue">0</strong></div>
+        <div class="track"><div class="bar" id="low"></div></div>
+    </div>
+    <div class="meter">
+        <div class="label"><span>MID</span><strong id="midValue">0</strong></div>
+        <div class="track"><div class="bar" id="mid"></div></div>
+    </div>
+    <div class="meter">
+        <div class="label"><span>HIGH</span><strong id="highValue">0</strong></div>
+        <div class="track"><div class="bar" id="high"></div></div>
+    </div>
+
+    <div id="beat">BEAT</div>
+</main>
+<script>
+(() => {
+    const status = document.getElementById('connection');
+    const bars = [document.getElementById('low'), document.getElementById('mid'), document.getElementById('high')];
+    const values = [document.getElementById('lowValue'), document.getElementById('midValue'), document.getElementById('highValue')];
+    const beat = document.getElementById('beat');
+    let beatTimer = 0;
+
+    function connect() {
+        const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const socket = new WebSocket(`${protocol}//${location.host}/audio`);
+        socket.binaryType = 'arraybuffer';
+
+        socket.onopen = () => status.textContent = 'Connected';
+        socket.onclose = () => {
+            status.textContent = 'Disconnected — reconnecting';
+            setTimeout(connect, 1000);
+        };
+        socket.onerror = () => socket.close();
+        socket.onmessage = event => {
+            const data = new Uint8Array(event.data);
+            if (data.length < 4) return;
+
+            for (let i = 0; i < 3; i++) {
+                values[i].textContent = data[i];
+                bars[i].style.width = `${data[i] / 255 * 100}%`;
+            }
+
+            if ((data[3] & 1) !== 0) {
+                beat.classList.add('on');
+                clearTimeout(beatTimer);
+                beatTimer = setTimeout(() => beat.classList.remove('on'), 90);
+            }
+        };
+    }
+
+    connect();
+})();
+</script>
+</body>
+</html>
