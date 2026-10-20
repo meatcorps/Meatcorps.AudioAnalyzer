@@ -19,6 +19,10 @@
         <IsPackable>true</IsPackable>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <RootNamespace>Meatcorps.AudioAnalyzer.Client</RootNamespace>
+        <VersionPrefix>0.1.0</VersionPrefix>
+        <BuildNumber Condition="'$(BuildNumber)' == ''">1</BuildNumber>
+        <BuildNumber Condition="'$(GITHUB_RUN_NUMBER)' != ''">$(GITHUB_RUN_NUMBER)</BuildNumber>
+        <Version>$(VersionPrefix)-preview.$(BuildNumber)</Version>
     </PropertyGroup>
 
     <ItemGroup>
