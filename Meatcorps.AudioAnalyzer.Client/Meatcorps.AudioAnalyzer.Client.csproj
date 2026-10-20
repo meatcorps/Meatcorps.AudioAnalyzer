@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageId>Meatcorps.AudioAnalyzer.Client</PackageId>
+        <Authors>Dennis Steffen</Authors>
+        <Company>Meatcorps</Company>
+        <Product>Meatcorps Audio Analyzer Websocket client</Product>
+        <Description>
+            Relative simple websocket client. You need the Meatcorps.AudioAnalyzer service running. 
+        </Description>
+        <RepositoryUrl>https://github.com/meatcorps/Meatcorps.AudioAnalyzer</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/meatcorps/Meatcorps.AudioAnalyzer</PackageProjectUrl>
+        <PackageTags>audio;analyzing;service;client;websocket</PackageTags>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <IsPackable>true</IsPackable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <RootNamespace>Meatcorps.AudioAnalyzer.Client</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../LICENSE" Pack="true" PackagePath=""/>
+        <None Include="../README.md" Pack="true" PackagePath=""/>
+    </ItemGroup>
+
+</Project>

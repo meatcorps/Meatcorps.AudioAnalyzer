@@ -2,7 +2,7 @@ using System.Net.WebSockets;
 
 namespace Meatcorps.AudioAnalyzer.Client;
 
-public sealed class AudioAnalyzerClient : IAsyncDisposable
+public sealed class AudioAnalyzerClient : IDisposable
 {
     private readonly Uri _uri;
     private readonly TimeSpan _reconnectDelay;
@@ -166,9 +166,9 @@ public sealed class AudioAnalyzerClient : IAsyncDisposable
         }
     }
 
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
-        await StopAsync();
+        StopAsync().Wait(TimeSpan.FromSeconds(10));
 
         _socket?.Dispose();
         _socket = null;

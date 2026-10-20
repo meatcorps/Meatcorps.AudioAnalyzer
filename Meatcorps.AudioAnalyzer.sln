@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meatcorps.AudioAnalyzer", "Meatcorps.AudioAnalyzer\Meatcorps.AudioAnalyzer.csproj", "{3EECBA3D-69BC-4ED5-B72E-58F53962D7A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meatcorps.AudioAnalyzer.Client", "Meatcorps.AudioAnalyzer.Client\Meatcorps.AudioAnalyzer.Client.csproj", "{CC766EC5-C4AC-48AA-919A-C291FB683A73}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3EECBA3D-69BC-4ED5-B72E-58F53962D7A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EECBA3D-69BC-4ED5-B72E-58F53962D7A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EECBA3D-69BC-4ED5-B72E-58F53962D7A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EECBA3D-69BC-4ED5-B72E-58F53962D7A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC766EC5-C4AC-48AA-919A-C291FB683A73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC766EC5-C4AC-48AA-919A-C291FB683A73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC766EC5-C4AC-48AA-919A-C291FB683A73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC766EC5-C4AC-48AA-919A-C291FB683A73}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
